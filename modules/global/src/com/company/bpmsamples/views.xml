@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
+    <view class="com.company.bpmsamples.entity.Task"
+          extends="_local"
+          name="task-browse">
+        <property name="initiator"
+                  view="_minimal"/>
+        <property name="executor"
+                  view="_minimal"/>
+    </view>
+    <view class="com.company.bpmsamples.entity.Task"
+          extends="_local"
+          name="task-edit">
+        <property name="initiator"
+                  view="_minimal"/>
+        <property name="executor"
+                  view="_minimal"/>
+    </view>
+</views>

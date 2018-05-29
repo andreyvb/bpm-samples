@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://browseCaption"
+        class="com.company.bpmsamples.web.task.TaskBrowse"
+        focusComponent="tasksTable"
+        lookupComponent="tasksTable"
+        messagesPack="com.company.bpmsamples.web.task">
+    <dsContext>
+        <groupDatasource id="tasksDs"
+                         class="com.company.bpmsamples.entity.Task"
+                         view="task-browse">
+            <query>
+                <![CDATA[select e from bpmsamples$Task e]]>
+            </query>
+        </groupDatasource>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="tasksTable"
+            spacing="true">
+        <filter id="filter"
+                applyTo="tasksTable"
+                datasource="tasksDs">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="tasksTable"
+                    multiselect="true"
+                    width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="refresh"/>
+            </actions>
+            <columns>
+                <column id="caption"/>
+                <column id="description"/>
+                <column id="initiator"/>
+                <column id="executor"/>
+                <column id="acceptanceRequired"/>
+                <column id="processState"/>
+            </columns>
+            <rows datasource="tasksDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="tasksTable.create"/>
+                <button id="editBtn"
+                        action="tasksTable.edit"/>
+                <button id="removeBtn"
+                        action="tasksTable.remove"/>
+                <button id="refreshBtn"
+                        action="tasksTable.refresh"/>
+            </buttonsPanel>
+        </groupTable>
+    </layout>
+</window>

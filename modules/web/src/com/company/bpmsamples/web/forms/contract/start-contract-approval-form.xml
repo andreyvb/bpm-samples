@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://caption"
+        class="com.company.bpmsamples.web.forms.contract.StartContractApprovalForm"
+        messagesPack="com.company.bpmsamples.web.forms.contract">
+    <dsContext>
+        <datasource id="procInstanceDs" view="procInstance-edit" class="com.haulmont.bpm.entity.ProcInstance">
+            <collectionDatasource id="procActorsDs" property="procActors"/>
+            <collectionDatasource id="procAttachmentsDs" property="procAttachments"/>
+        </datasource>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout spacing="true" expand="formActions">
+        <hbox spacing="true">
+            <label value="msg://contractInfoPrefix" align="MIDDLE_LEFT"/>
+            <textField id="contractField" editable="false"/>
+        </hbox>
+        <hbox spacing="true">
+            <label value="msg://automaticApprovalPeriod" align="MIDDLE_LEFT"/>
+            <textField id="automaticApprovalPeriodField" width="300px" datatype="int"/>
+        </hbox>
+        <frame id="procActorsFrame" screen="procActorsFrame" height="200px"/>
+        <hbox id="formActions" spacing="true">
+            <button id="commit" caption="mainMsg://actions.Ok" invoke="onCommit"/>
+            <button id="cancel" caption="mainMsg://actions.Cancel" invoke="onCancel"/>
+        </hbox>
+    </layout>
+</window>

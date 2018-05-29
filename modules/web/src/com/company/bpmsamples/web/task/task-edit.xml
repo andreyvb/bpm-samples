@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://editorCaption"
+        class="com.company.bpmsamples.web.task.TaskEdit"
+        datasource="taskDs"
+        focusComponent="fieldGroup"
+        messagesPack="com.company.bpmsamples.web.task">
+    <dsContext>
+        <datasource id="taskDs"
+                    class="com.company.bpmsamples.entity.Task"
+                    view="task-edit"/>
+        <collectionDatasource id="usersDs"
+                              class="com.haulmont.cuba.security.entity.User">
+            <query>
+                <![CDATA[select e from sec$User e order by e.login]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="windowActions"
+            spacing="true">
+        <fieldGroup id="fieldGroup"
+                    datasource="taskDs">
+            <column width="400px">
+                <field property="caption"/>
+                <field property="description"
+                       rows="5"/>
+                <field optionsDatasource="usersDs"
+                       property="initiator"/>
+                <field optionsDatasource="usersDs"
+                       property="executor"/>
+                <field property="acceptanceRequired"/>
+                <field property="processState" editable="false"/>
+            </column>
+        </fieldGroup>
+        <groupBox caption="msg://processActionsFrame"
+                  spacing="true"
+                  width="300px">
+            <frame id="procActionsFrame"
+                   screen="procActionsFrame"/>
+        </groupBox>
+        <button id="startProcessProgrammaticallyBtn"
+                caption="msg://startProcessProgrammatically"
+                icon="font-icon:PLAY"
+                invoke="startProcessProgrammatically"
+                width="300px"/>
+        <frame id="windowActions"
+               screen="editWindowActions"/>
+    </layout>
+</window>
