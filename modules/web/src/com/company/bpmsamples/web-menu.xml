@@ -4,5 +4,6 @@
           insertBefore="administration">
         <item screen="bpmsamples$Contract.browse"/>
         <item screen="bpmsamples$Task.browse"/>
+        <item screen="bpmsamples$Order.browse"/>
     </menu>
 </menu-config>

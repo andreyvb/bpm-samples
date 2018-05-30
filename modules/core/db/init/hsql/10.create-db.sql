@@ -37,3 +37,19 @@ create table BPMSAMPLES_TASK (
     primary key (ID)
 )^
 -- end BPMSAMPLES_TASK
+-- begin BPMSAMPLES_ORDER
+create table BPMSAMPLES_ORDER (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NUMBER_ varchar(255),
+    --
+    primary key (ID)
+)^
+-- end BPMSAMPLES_ORDER

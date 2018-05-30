@@ -125,7 +125,7 @@ public class TaskEdit extends AbstractEditor<Task> {
                     .addProcActor("executor", getItem().getExecutor())
                     .setEntity(getItem());
 
-            //The created ProcInstance will have two proc actors. None of the entities are persisted yet.
+            //The created ProcInstance will have two proc actors. None of the entities is persisted yet.
             ProcInstance procInstance = bpmEntitiesService.createProcInstance(procInstanceDetails);
 
             //A map with process variables that must be passed to the Activiti process instance when it is started.
@@ -133,12 +133,12 @@ public class TaskEdit extends AbstractEditor<Task> {
             HashMap<String, Object> processVariables = new HashMap<>();
             processVariables.put("acceptanceRequired", getItem().getAcceptanceRequired());
 
-            //Starts the process. The "startProcess" method automatically persist passed procInstance with its actors,
-            //if required
+            //Starts the process. The "startProcess" method automatically persists the passed procInstance with its actors
             processRuntimeService.startProcess(procInstance, "Process started programmatically", processVariables);
             showNotification(getMessage("processStarted"));
 
-            //refresh the procActionsFrame to display complete tasks buttons (if there are any for the current user)
+            //refresh the procActionsFrame to display complete tasks buttons (if a process task appears for the current
+            //user after the process is started)
             initProcActionsFrame();
         }
     }

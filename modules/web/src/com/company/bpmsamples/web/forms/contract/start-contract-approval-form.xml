@@ -10,15 +10,16 @@
         </datasource>
     </dsContext>
     <dialogMode height="600"
-                width="800"/>
-    <layout spacing="true" expand="formActions">
+                width="800"
+                resizable="true"/>
+    <layout spacing="true" expand="procActorsFrame">
         <hbox spacing="true">
             <label value="msg://contractInfoPrefix" align="MIDDLE_LEFT"/>
-            <textField id="contractField" editable="false"/>
+            <textField id="contractField" width="300px" editable="false"/>
         </hbox>
         <hbox spacing="true">
             <label value="msg://automaticApprovalPeriod" align="MIDDLE_LEFT"/>
-            <textField id="automaticApprovalPeriodField" width="300px" datatype="int"/>
+            <textField id="automaticApprovalPeriodField" width="100px" datatype="int"/>
         </hbox>
         <frame id="procActorsFrame" screen="procActorsFrame" height="200px"/>
         <hbox id="formActions" spacing="true">

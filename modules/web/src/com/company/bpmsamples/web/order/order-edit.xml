@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://editorCaption"
+        class="com.company.bpmsamples.web.order.OrderEdit"
+        datasource="orderDs"
+        focusComponent="fieldGroup"
+        messagesPack="com.company.bpmsamples.web.order">
+    <dsContext>
+        <datasource id="orderDs"
+                    class="com.company.bpmsamples.entity.Order"
+                    view="_local"/>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="windowActions"
+            spacing="true">
+        <fieldGroup id="fieldGroup"
+                    datasource="orderDs">
+            <column width="250px">
+                <field property="number"/>
+            </column>
+        </fieldGroup>
+        <groupBox caption="msg://processActions" width="300px">
+            <frame id="procActionsFrame" screen="procActionsFrame"/>
+        </groupBox>
+        <frame id="windowActions"
+               screen="editWindowActions"/>
+    </layout>
+</window>

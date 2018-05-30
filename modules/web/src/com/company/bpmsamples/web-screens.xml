@@ -10,4 +10,8 @@
             template="com/company/bpmsamples/web/task/task-browse.xml"/>
     <screen id="bpmsamples$Task.edit"
             template="com/company/bpmsamples/web/task/task-edit.xml"/>
+    <screen id="bpmsamples$Order.browse"
+            template="com/company/bpmsamples/web/order/order-browse.xml"/>
+    <screen id="bpmsamples$Order.edit"
+            template="com/company/bpmsamples/web/order/order-edit.xml"/>
 </screen-config>
