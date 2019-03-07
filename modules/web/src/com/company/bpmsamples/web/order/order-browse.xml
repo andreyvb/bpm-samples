@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://browseCaption"
-        class="com.company.bpmsamples.web.order.OrderBrowse"
         focusComponent="ordersTable"
-        lookupComponent="ordersTable"
         messagesPack="com.company.bpmsamples.web.order">
-    <dsContext>
-        <groupDatasource id="ordersDs"
-                         class="com.company.bpmsamples.entity.Order"
-                         view="_local">
-            <query>
-                <![CDATA[select e from bpmsamples$Order e]]>
-            </query>
-        </groupDatasource>
-    </dsContext>
+    <data readOnly="true">
+        <collection id="ordersDc"
+                    class="com.company.bpmsamples.entity.Order"
+                    view="_local">
+            <loader id="ordersDl">
+                <query>
+                    <![CDATA[select e from bpmsamples$Order e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <dialogMode height="600"
                 width="800"/>
     <layout expand="ordersTable"
             spacing="true">
         <filter id="filter"
                 applyTo="ordersTable"
-                datasource="ordersDs">
+                dataLoader="ordersDl">
             <properties include=".*"/>
         </filter>
         <groupTable id="ordersTable"
-                    width="100%">
+                    width="100%"
+                    dataContainer="ordersDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="number"/>
             </columns>
-            <rows datasource="ordersDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn"
-                        action="ordersTable.create"/>
-                <button id="editBtn"
-                        action="ordersTable.edit"/>
-                <button id="removeBtn"
-                        action="ordersTable.remove"/>
+                <button id="createBtn" action="ordersTable.create"/>
+                <button id="editBtn" action="ordersTable.edit"/>
+                <button id="removeBtn" action="ordersTable.remove"/>
             </buttonsPanel>
         </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

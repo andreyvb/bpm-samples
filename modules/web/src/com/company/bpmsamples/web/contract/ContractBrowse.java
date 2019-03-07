@@ -1,6 +1,11 @@
 package com.company.bpmsamples.web.contract;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.screen.*;
+import com.company.bpmsamples.entity.Contract;
 
-public class ContractBrowse extends AbstractLookup {
+@UiController("bpmsamples$Contract.browse")
+@UiDescriptor("contract-browse.xml")
+@LookupComponent("contractsTable")
+@LoadDataBeforeShow
+public class ContractBrowse extends StandardLookup<Contract> {
 }

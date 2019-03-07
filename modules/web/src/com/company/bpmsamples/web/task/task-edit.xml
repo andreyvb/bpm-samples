@@ -1,51 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://editorCaption"
-        class="com.company.bpmsamples.web.task.TaskEdit"
-        datasource="taskDs"
-        focusComponent="fieldGroup"
+        focusComponent="form"
         messagesPack="com.company.bpmsamples.web.task">
-    <dsContext>
-        <datasource id="taskDs"
-                    class="com.company.bpmsamples.entity.Task"
-                    view="task-edit"/>
-        <collectionDatasource id="usersDs"
-                              class="com.haulmont.cuba.security.entity.User">
-            <query>
-                <![CDATA[select e from sec$User e order by e.login]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+    <data>
+        <instance id="taskDc"
+                  class="com.company.bpmsamples.entity.Task"
+                  view="task-edit">
+            <loader id="taskDl"/>
+        </instance>
+        <collection id="usersDc" class="com.haulmont.cuba.security.entity.User">
+            <loader>
+                <query><![CDATA[select e from sec$User e  order by e.login]]></query>
+            </loader>
+        </collection>
+    </data>
     <dialogMode height="600"
                 width="800"/>
-    <layout expand="windowActions"
-            spacing="true">
-        <fieldGroup id="fieldGroup"
-                    datasource="taskDs">
-            <column width="400px">
-                <field property="caption"/>
-                <field property="description"
-                       rows="5"/>
-                <field optionsDatasource="usersDs"
-                       property="initiator"/>
-                <field optionsDatasource="usersDs"
-                       property="executor"/>
-                <field property="acceptanceRequired"/>
-                <field property="processState" editable="false"/>
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="taskDc">
+            <column width="250px">
+                <textField id="captionField" property="caption"/>
+                <textField id="descriptionField" property="description" height="100px"/>
+                <lookupField id="initiatorField" property="initiator" optionsContainer="usersDc"/>
+                <lookupField id="executorField" property="executor" optionsContainer="usersDc"/>
+                <checkBox id="acceptanceRequiredField" property="acceptanceRequired"/>
+                <textField id="processStateField" property="processState" editable="false"/>
             </column>
-        </fieldGroup>
-        <groupBox caption="msg://processActionsFrame"
+        </form>
+        <groupBox id="procActionsBox"
+                  caption="msg://processActionsFrame"
                   spacing="true"
-                  width="300px">
-            <frame id="procActionsFrame"
-                   screen="procActionsFrame"/>
+                  width="AUTO"
+                  orientation="vertical">
+            <fragment id="procActionsFragment"
+                      screen="bpm_ProcActionsFragment"/>
         </groupBox>
         <button id="startProcessProgrammaticallyBtn"
                 caption="msg://startProcessProgrammatically"
                 icon="font-icon:PLAY"
-                invoke="startProcessProgrammatically"
                 width="300px"/>
-        <frame id="windowActions"
-               screen="editWindowActions"/>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

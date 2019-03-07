@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://editorCaption"
-        class="com.company.bpmsamples.web.contract.ContractEdit"
-        datasource="contractDs"
-        focusComponent="fieldGroup"
+        focusComponent="form"
         messagesPack="com.company.bpmsamples.web.contract">
-    <dsContext>
-        <datasource id="contractDs"
-                    class="com.company.bpmsamples.entity.Contract"
-                    view="_local"/>
-    </dsContext>
+    <data>
+        <instance id="contractDc"
+                  class="com.company.bpmsamples.entity.Contract"
+                  view="_local">
+            <loader/>
+        </instance>
+    </data>
     <dialogMode height="600"
                 width="800"/>
-    <layout expand="windowActions"
-            spacing="true">
-        <fieldGroup id="fieldGroup"
-                    datasource="contractDs">
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="contractDc">
             <column width="250px">
-                <field property="number"/>
-                <field property="date"/>
-                <field property="amount"/>
+                <textField id="numberField" property="number"/>
+                <dateField id="dateField" property="date"/>
+                <textField id="amountField" property="amount"/>
             </column>
-        </fieldGroup>
-        <groupBox caption="msg://processActions" spacing="true" width="300px">
-            <frame id="procActionsFrame" screen="procActionsFrame" width="100%"/>
+        </form>
+        <groupBox id="procActionsBox"
+                  caption="msg://process"
+                  spacing="true"
+                  width="AUTO"
+                  orientation="vertical">
+            <fragment id="procActionsFragment"
+                      screen="bpm_ProcActionsFragment"/>
         </groupBox>
-        <frame id="windowActions"
-               screen="editWindowActions"/>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

@@ -75,7 +75,7 @@ public class UpdateProcessStateListener implements ActivitiEventListener {
         Persistence persistence = AppBeans.get(Persistence.class);
         try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            Entity entity = em.find((Class<Entity<UUID>>) metaClass.getJavaClass(), entityId);
+            Entity entity = em.find(metaClass.getJavaClass(), entityId);
             if (entity != null) {
                 ((HasProcessState) entity).setProcessState(processState);
             } else {

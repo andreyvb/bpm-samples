@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://caption"
-        class="com.company.bpmsamples.web.forms.contract.StartContractApprovalForm"
         messagesPack="com.company.bpmsamples.web.forms.contract">
-    <dsContext>
-        <datasource id="procInstanceDs" view="procInstance-edit" class="com.haulmont.bpm.entity.ProcInstance">
-            <collectionDatasource id="procActorsDs" property="procActors"/>
-            <collectionDatasource id="procAttachmentsDs" property="procAttachments"/>
-        </datasource>
-    </dsContext>
+    <data>
+        <instance id="procInstanceDc" class="com.haulmont.bpm.entity.ProcInstance" view="procInstance-edit">
+            <collection id="procActorsDc" property="procActors"/>
+            <collection id="procAttachmentsDc" property="procAttachments"/>
+        </instance>
+    </data>
     <dialogMode height="600"
                 width="800"
                 resizable="true"/>
-    <layout spacing="true" expand="procActorsFrame">
+    <layout>
         <hbox spacing="true">
             <label value="msg://contractInfoPrefix" align="MIDDLE_LEFT"/>
             <textField id="contractField" width="300px" editable="false"/>
@@ -23,8 +22,8 @@
         </hbox>
         <frame id="procActorsFrame" screen="procActorsFrame" height="200px"/>
         <hbox id="formActions" spacing="true">
-            <button id="commit" caption="mainMsg://actions.Ok" invoke="onCommit"/>
-            <button id="cancel" caption="mainMsg://actions.Cancel" invoke="onCancel"/>
+            <button id="commit" caption="mainMsg://actions.Ok"/>
+            <button id="cancel" caption="mainMsg://actions.Cancel"/>
         </hbox>
     </layout>
 </window>

@@ -1,30 +1,27 @@
 package com.company.bpmsamples.web.order;
 
-import com.haulmont.bpm.gui.procactions.ProcActionsFrame;
-import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.bpm.gui.procactionsfragment.ProcActionsFragment;
+import com.haulmont.cuba.gui.components.Fragment;
+import com.haulmont.cuba.gui.screen.*;
 import com.company.bpmsamples.entity.Order;
 
 import javax.inject.Inject;
 
-/**
- * The screen demonstrates the simplest way of working with process actions - using the {@link ProcActionsFrame}
- * initialized with the {@link ProcActionsFrame.Initializer#standard()} method
- */
-public class OrderEdit extends AbstractEditor<Order> {
+@UiController("bpmsamples$Order.edit")
+@UiDescriptor("order-edit.xml")
+@EditedEntityContainer("orderDc")
+@LoadDataBeforeShow
+public class OrderEdit extends StandardEditor<Order> {
 
     private static final String PROCESS_CODE = "orderDelivery-1";
 
     @Inject
-    protected ProcActionsFrame procActionsFrame;
+    private ProcActionsFragment procActionsFragment;
 
-    @Override
-    public void ready() {
-        super.ready();
-        //the standard() initialization adds predicates and listeners to start and complete task events. The predicates
-        //commit the entity editor, listeners show notifications and re-initialize procActionsFrame after the process
-        //action is performed
-        procActionsFrame.initializer()
+    @Subscribe
+    private void onBeforeShow(BeforeShowEvent event) {
+        procActionsFragment.initializer()
                 .standard()
-                .init(PROCESS_CODE, getItem());
+                .init(PROCESS_CODE, getEditedEntity());
     }
 }

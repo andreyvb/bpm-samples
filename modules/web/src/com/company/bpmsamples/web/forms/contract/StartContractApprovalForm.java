@@ -4,30 +4,29 @@ import com.company.bpmsamples.entity.Contract;
 import com.haulmont.bpm.entity.ProcInstance;
 import com.haulmont.bpm.gui.form.ProcForm;
 import com.haulmont.bpm.gui.procactor.ProcActorsFrame;
-import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.Subscribe;
+import com.haulmont.cuba.gui.screen.UiController;
+import com.haulmont.cuba.gui.screen.UiDescriptor;
 
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This BPM process form contains the {@link ProcActorsFrame} and component for displaying an information about the
- * {@link Contract} entity that was passed in windows parameters
- */
-public class StartContractApprovalForm extends AbstractWindow implements ProcForm {
+@UiController("start-contract-approval-form")
+@UiDescriptor("start-contract-approval-form.xml")
+public class StartContractApprovalForm extends Screen implements ProcForm {
 
     @Inject
-    protected Datasource<ProcInstance> procInstanceDs;
-
-    //this window parameter was passed from the com.company.bpmsamples.web.contract.ContractEdit
-    @WindowParam(required = true)
-    private Contract contract;
+    protected TextField<Integer> automaticApprovalPeriodField;
 
     @Inject
-    protected TextField automaticApprovalPeriodField;
+    private DataManager dataManager;
 
     @Inject
     protected TextField contractField;
@@ -35,25 +34,42 @@ public class StartContractApprovalForm extends AbstractWindow implements ProcFor
     @Inject
     protected ProcActorsFrame procActorsFrame;
 
-    //procInstance window parameter is passed to every process form if it is opened by the ProcActionsFrame
-    @WindowParam(name = "procInstance", required = true)
-    protected ProcInstance procInstance;
+    @Inject
+    private InstanceContainer<ProcInstance> procInstanceDc;
 
-    @Override
-    public void ready() {
-        super.ready();
-        procInstanceDs.setItem(procInstance);
-        initCustomUI();
-        initProcActorsFrame();
-    }
+    @Inject
+    private MetadataTools metadataTools;
 
-    private void initCustomUI() {
+    private Contract contract;
+
+    private ProcInstance procInstance;
+
+    @Subscribe
+    private void onBeforeShow(BeforeShowEvent event) {
+        procInstanceDc.setItem(procInstance);
         automaticApprovalPeriodField.setValue(30);
-        contractField.setValue(contract.getInstanceName());
+        contractField.setValue(metadataTools.getInstanceName(contract));
+        procActorsFrame.setProcInstance(procInstance);
     }
 
-    private void initProcActorsFrame() {
-        procActorsFrame.setProcInstance(procInstance);
+    public void setContract(Contract contractEntity) {
+        contract = contractEntity;
+    }
+
+    public void setProcInstance(ProcInstance procInstanceEntity) {
+        procInstance = procInstanceEntity;
+    }
+
+    @Subscribe("commit")
+    private void onCommitClick(Button.ClickEvent event) {
+        getScreenData().getDataContext().commit();
+        //getDsContext().commit();
+        //close(COMMIT_ACTION_ID);
+    }
+
+    @Subscribe("cancel")
+    private void onCancelClick(Button.ClickEvent event) {
+        //close(CLOSE_ACTION_ID);
     }
 
     @Override
@@ -61,28 +77,14 @@ public class StartContractApprovalForm extends AbstractWindow implements ProcFor
         return null;
     }
 
-    /**
-     * The method returns a map of process variables that will be added to the process wen it is started. The
-     * "automaticApprovalPeriod" variable is used as a an expression for the period of the boundary timer event
-     */
+    private String makeTimerExpression(int period) {
+        return "PT" + period + "S";
+    }
+
     @Override
     public Map<String, Object> getFormResult() {
         HashMap<String, Object> processVariables = new HashMap<>();
         processVariables.put("automaticApprovalPeriod", makeTimerExpression(automaticApprovalPeriodField.getValue()));
         return processVariables;
-    }
-
-    private String makeTimerExpression(int period) {
-        return "PT" + period + "S";
-    }
-
-    public void onCommit() {
-        //need to commit the context because we want to persist process actors added by the ProcActorsFrame
-        getDsContext().commit();
-        close(COMMIT_ACTION_ID);
-    }
-
-    public void onCancel() {
-        close(CLOSE_ACTION_ID);
     }
 }

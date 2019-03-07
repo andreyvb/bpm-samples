@@ -3,7 +3,7 @@
     <menu id="application-bpmsamples"
           insertBefore="administration">
         <item screen="bpmsamples$Contract.browse"/>
-        <item screen="bpmsamples$Task.browse"/>
         <item screen="bpmsamples$Order.browse"/>
+        <item screen="bpmsamples$Task.browse"/>
     </menu>
 </menu-config>

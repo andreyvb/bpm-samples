@@ -1,58 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://browseCaption"
-        class="com.company.bpmsamples.web.task.TaskBrowse"
         focusComponent="tasksTable"
-        lookupComponent="tasksTable"
         messagesPack="com.company.bpmsamples.web.task">
-    <dsContext>
-        <groupDatasource id="tasksDs"
-                         class="com.company.bpmsamples.entity.Task"
-                         view="task-browse">
-            <query>
-                <![CDATA[select e from bpmsamples$Task e]]>
-            </query>
-        </groupDatasource>
-    </dsContext>
+    <data readOnly="true">
+        <collection id="tasksDc"
+                    class="com.company.bpmsamples.entity.Task"
+                    view="task-browse">
+            <loader id="tasksDl">
+                <query>
+                    <![CDATA[select e from bpmsamples$Task e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <dialogMode height="600"
                 width="800"/>
     <layout expand="tasksTable"
             spacing="true">
         <filter id="filter"
                 applyTo="tasksTable"
-                datasource="tasksDs">
+                dataLoader="tasksDl">
             <properties include=".*"/>
         </filter>
         <groupTable id="tasksTable"
-                    multiselect="true"
-                    width="100%">
+                    width="100%"
+                    dataContainer="tasksDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
-                <action id="refresh"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="caption"/>
+                <column id="processState"/>
                 <column id="description"/>
                 <column id="initiator"/>
                 <column id="executor"/>
                 <column id="acceptanceRequired"/>
-                <column id="processState"/>
             </columns>
-            <rows datasource="tasksDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn"
-                        action="tasksTable.create"/>
-                <button id="editBtn"
-                        action="tasksTable.edit"/>
-                <button id="removeBtn"
-                        action="tasksTable.remove"/>
-                <button id="refreshBtn"
-                        action="tasksTable.refresh"/>
+                <button id="createBtn" action="tasksTable.create"/>
+                <button id="editBtn" action="tasksTable.edit"/>
+                <button id="removeBtn" action="tasksTable.remove"/>
             </buttonsPanel>
         </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

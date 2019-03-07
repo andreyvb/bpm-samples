@@ -1,17 +1,19 @@
 package com.company.bpmsamples.web.task;
 
-import com.company.bpmsamples.entity.Task;
 import com.haulmont.bpm.entity.ProcActor;
 import com.haulmont.bpm.entity.ProcInstance;
 import com.haulmont.bpm.entity.ProcRole;
 import com.haulmont.bpm.gui.action.StartProcessAction;
-import com.haulmont.bpm.gui.procactions.ProcActionsFrame;
+import com.haulmont.bpm.gui.procactionsfragment.ProcActionsFragment;
 import com.haulmont.bpm.service.BpmEntitiesService;
 import com.haulmont.bpm.service.ProcessRuntimeService;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.model.InstanceLoader;
+import com.haulmont.cuba.gui.screen.*;
+import com.company.bpmsamples.entity.Task;
+import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -21,18 +23,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class TaskEdit extends AbstractEditor<Task> {
-
-    @Inject
-    protected ProcActionsFrame procActionsFrame;
+@UiController("bpmsamples$Task.edit")
+@UiDescriptor("task-edit.xml")
+@EditedEntityContainer("taskDc")
+@LoadDataBeforeShow
+public class TaskEdit extends StandardEditor<Task> {
 
     public static final String PROCESS_CODE = "taskExecution-1";
 
     @Inject
-    protected Metadata metadata;
-
-    @Inject
-    protected UserSession userSession;
+    protected ProcActionsFragment procActionsFragment;
 
     @Inject
     protected BpmEntitiesService bpmEntitiesService;
@@ -41,58 +41,114 @@ public class TaskEdit extends AbstractEditor<Task> {
     protected ProcessRuntimeService processRuntimeService;
 
     @Inject
-    protected Datasource<Task> taskDs;
+    private MessageBundle messageBundle;
 
-    @Override
-    protected void initNewItem(Task item) {
-        super.initNewItem(item);
-        item.setInitiator(userSession.getCurrentOrSubstitutedUser());
+    @Inject
+    private Notifications notifications;
+
+    @Inject
+    private Metadata metadata;
+
+    @Inject
+    private Messages messages;
+
+    @Inject
+    private InstanceLoader<Task> taskDl;
+
+    @Inject
+    private UserSession userSession;
+
+    @Subscribe
+    private void onInitEntity(InitEntityEvent<Task> event) {
+        event.getEntity().setInitiator(userSession.getCurrentOrSubstitutedUser());
     }
 
-    @Override
-    public void ready() {
-        super.ready();
-        initProcActionsFrame();
+    @Subscribe
+    private void onBeforeShow(BeforeShowEvent event) {
+        initProcActionsFragment();
         changeStartProcessBtnCaption();
     }
 
-    private void initProcActionsFrame() {
-        procActionsFrame.initializer()
+    /**
+     * Method starts the process without {@link ProcActionsFragment}
+     */
+    @Subscribe("startProcessProgrammaticallyBtn")
+    private void onStartProcessProgrammaticallyBtnClick(Button.ClickEvent event) {
+
+        commitChanges()
+                .then(() -> {
+            /*The ProcInstanceDetails object is used for describing a ProcInstance to be created with its proc actors*/
+            BpmEntitiesService.ProcInstanceDetails procInstanceDetails = new BpmEntitiesService.ProcInstanceDetails(PROCESS_CODE)
+                    .addProcActor("initiator", getEditedEntity().getInitiator())
+                    .addProcActor("executor", getEditedEntity().getExecutor())
+                    .setEntity(getEditedEntity());
+
+            /*The created ProcInstance will have two proc actors. None of the entities is persisted yet.*/
+            ProcInstance procInstance = bpmEntitiesService.createProcInstance(procInstanceDetails);
+
+            /*A map with process variables that must be passed to the Activiti process instance when it is started.
+            This variable is used in the model to make a decision for one of gateways.*/
+            HashMap<String, Object> processVariables = new HashMap<>();
+            processVariables.put("acceptanceRequired", getEditedEntity().getAcceptanceRequired());
+
+            /*Starts the process. The "startProcess" method automatically persists the passed procInstance with its actors*/
+            processRuntimeService.startProcess(procInstance, "Process started programmatically", processVariables);
+            notifications.create()
+                    .withCaption(messageBundle.getMessage("processStarted"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
+
+            /*refresh the procActionsFragment to display complete tasks buttons
+            (if a process task appears for the current user after the process is started)*/
+            initProcActionsFragment();
+        });
+    }
+
+    private void initProcActionsFragment() {
+        procActionsFragment.initializer()
                 .standard()
                 .setBeforeStartProcessPredicate(() -> {
-                    //the predicate creates process actors and sets them to the process instance created by the ProcActionsFrame
-                    if (commit()) {
-                        ProcInstance procInstance = procActionsFrame.getProcInstance();
-                        ProcActor initiatorProcActor = createProcActor("initiator", procInstance, getItem().getInitiator());
-                        ProcActor executorProcActor = createProcActor("executor", procInstance, getItem().getExecutor());
+                    /*the predicate creates process actors and sets them to the process instance
+                    created by the ProcActionsFragment*/
+                    if (commitChanges().getStatus() == OperationResult.Status.SUCCESS) {
+                        ProcInstance procInstance = procActionsFragment.getProcInstance();
+                        ProcActor initiatorProcActor = createProcActor("initiator", procInstance, getEditedEntity().getInitiator());
+                        ProcActor executorProcActor = createProcActor("executor", procInstance, getEditedEntity().getExecutor());
                         Set<ProcActor> procActors = new HashSet<>();
                         procActors.add(initiatorProcActor);
                         procActors.add(executorProcActor);
                         procInstance.setProcActors(procActors);
                         return true;
-                    } else {
-                        return false;
                     }
+                    return false;
                 })
                 .setStartProcessActionProcessVariablesSupplier(() -> {
-                    //the supplier returns a map with process variables that will be used by the Activiti process
+                    /*the supplier returns a map with process variables that will be used by the Activiti process*/
                     Map<String, Object> processVariables = new HashMap<>();
-                    processVariables.put("acceptanceRequired", getItem().getAcceptanceRequired());
+                    processVariables.put("acceptanceRequired", getEditedEntity().getAcceptanceRequired());
                     return processVariables;
                 })
                 .setAfterStartProcessListener(() -> {
-                    //custom listener in addition to the standard behavior refreshes the "taskDs", because the process
-                    //automatically updates the "processState" field of the "Task" entity.
-                    showNotification(messages.getMessage(ProcActionsFrame.class, "processStarted"));
-                    initProcActionsFrame();
-                    taskDs.refresh();
+                    /*custom listener in addition to the standard behavior refreshes the "taskDs", because the process
+                    automatically updates the "processState" field of the "Task" entity.*/
+                    notifications.create()
+                            .withCaption(messages.getMessage(ProcActionsFragment.class,"processStarted"))
+                            .withType(Notifications.NotificationType.HUMANIZED)
+                            .show();
+                    initProcActionsFragment();
+                    taskDl.setEntityId(getEditedEntity().getId());
+                    taskDl.load();
                 })
                 .setAfterCompleteTaskListener(() -> {
-                    showNotification(messages.getMessage(ProcActionsFrame.class, "taskCompleted"));
-                    initProcActionsFrame();
-                    taskDs.refresh();
+                    notifications.create()
+                            .withCaption(messages.getMessage(ProcActionsFragment.class,"taskCompleted"))
+                            .withType(Notifications.NotificationType.HUMANIZED)
+                            .show();
+                    initProcActionsFragment();
+                    taskDl.setEntityId(getEditedEntity().getId());
+                    taskDl.load();
                 })
-                .init(PROCESS_CODE, getItem());
+                .init(PROCESS_CODE, getEditedEntity());
     }
 
     private ProcActor createProcActor(String procRoleCode, ProcInstance procInstance, User user) {
@@ -105,41 +161,12 @@ public class TaskEdit extends AbstractEditor<Task> {
     }
 
     /**
-     * Method demonstrates how to get and modify process actions automatically created by the ProcActionsFrame
+     * Method demonstrates how to get and modify process actions automatically created by the ProcActionsFragment
      */
     private void changeStartProcessBtnCaption() {
-        StartProcessAction startProcessAction = procActionsFrame.getStartProcessAction();
+        StartProcessAction startProcessAction = procActionsFragment.getStartProcessAction();
         if (startProcessAction != null) {
-            startProcessAction.setCaption("Start process using ProcActionsFrame");
-        }
-    }
-
-    /**
-     * Method starts the process without {@link ProcActionsFrame}
-     */
-    public void startProcessProgrammatically() {
-        if (commit()) {
-            //The ProcInstanceDetails object is used for describing a ProcInstance to be created with its proc actors
-            BpmEntitiesService.ProcInstanceDetails procInstanceDetails = new BpmEntitiesService.ProcInstanceDetails(PROCESS_CODE)
-                    .addProcActor("initiator", getItem().getInitiator())
-                    .addProcActor("executor", getItem().getExecutor())
-                    .setEntity(getItem());
-
-            //The created ProcInstance will have two proc actors. None of the entities is persisted yet.
-            ProcInstance procInstance = bpmEntitiesService.createProcInstance(procInstanceDetails);
-
-            //A map with process variables that must be passed to the Activiti process instance when it is started.
-            //This variable is used in the model to make a decision for one of gateways.
-            HashMap<String, Object> processVariables = new HashMap<>();
-            processVariables.put("acceptanceRequired", getItem().getAcceptanceRequired());
-
-            //Starts the process. The "startProcess" method automatically persists the passed procInstance with its actors
-            processRuntimeService.startProcess(procInstance, "Process started programmatically", processVariables);
-            showNotification(getMessage("processStarted"));
-
-            //refresh the procActionsFrame to display complete tasks buttons (if a process task appears for the current
-            //user after the process is started)
-            initProcActionsFrame();
+            startProcessAction.setCaption("Start process using ProcActionsFragment");
         }
     }
 }

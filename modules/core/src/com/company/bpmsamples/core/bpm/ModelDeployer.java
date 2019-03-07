@@ -117,7 +117,7 @@ public class ModelDeployer {
 
     private List<ProcDefinition> findProcDefinitionsByModel(ProcModel model) {
         LoadContext<ProcDefinition> ctx = LoadContext.create(ProcDefinition.class);
-        ctx.setQueryString("select pd from bpm$ProcDefinition pd where pd.model.id = :model order by pd.name, pd.deploymentDate desc")
+        ctx.setQueryString("select pd from bpm$ProcDefinition pd where pd.model = :model order by pd.name, pd.deploymentDate desc")
                 .setParameter("model", model);
         return dataManager.loadList(ctx);
     }
