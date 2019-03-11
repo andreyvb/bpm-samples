@@ -4,7 +4,6 @@ import com.company.bpmsamples.entity.Contract;
 import com.haulmont.bpm.entity.ProcInstance;
 import com.haulmont.bpm.gui.form.ProcForm;
 import com.haulmont.bpm.gui.procactor.ProcActorsFrame;
-import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.TextField;
@@ -24,9 +23,6 @@ public class StartContractApprovalForm extends Screen implements ProcForm {
 
     @Inject
     protected TextField<Integer> automaticApprovalPeriodField;
-
-    @Inject
-    private DataManager dataManager;
 
     @Inject
     protected TextField contractField;
@@ -63,13 +59,12 @@ public class StartContractApprovalForm extends Screen implements ProcForm {
     @Subscribe("commit")
     private void onCommitClick(Button.ClickEvent event) {
         getScreenData().getDataContext().commit();
-        //getDsContext().commit();
-        //close(COMMIT_ACTION_ID);
+        close(WINDOW_COMMIT_AND_CLOSE_ACTION);
     }
 
     @Subscribe("cancel")
     private void onCancelClick(Button.ClickEvent event) {
-        //close(CLOSE_ACTION_ID);
+        close(WINDOW_CLOSE_ACTION);
     }
 
     @Override
