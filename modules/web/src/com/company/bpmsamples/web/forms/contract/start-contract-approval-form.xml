@@ -5,25 +5,25 @@
     <data>
         <instance id="procInstanceDc" class="com.haulmont.bpm.entity.ProcInstance" view="procInstance-edit">
             <collection id="procActorsDc" property="procActors"/>
-            <collection id="procAttachmentsDc" property="procAttachments"/>
+            <!--<collection id="procAttachmentsDc" property="procAttachments"/>-->
         </instance>
+        <collection id="usersDc" class="com.haulmont.cuba.security.entity.User">
+            <loader id="usersDl">
+                <query><![CDATA[select u from sec$User u order by u.name]]></query>
+            </loader>
+        </collection>
     </data>
-    <dialogMode height="600"
-                width="800"
-                resizable="true"/>
     <layout>
-        <hbox spacing="true">
-            <label value="msg://contractInfoPrefix" align="MIDDLE_LEFT"/>
-            <textField id="contractField" width="300px" editable="false"/>
-        </hbox>
-        <hbox spacing="true">
-            <label value="msg://automaticApprovalPeriod" align="MIDDLE_LEFT"/>
-            <textField id="automaticApprovalPeriodField" width="100px" datatype="int"/>
-        </hbox>
-        <frame id="procActorsFrame" screen="procActorsFrame" height="200px"/>
+        <form>
+            <column width="300px">
+                <textField id="contractField" width="100%" editable="false" caption="msg://contractInfoPrefix"/>
+                <textField id="automaticApprovalPeriodField" width="100%" datatype="int" caption="msg://automaticApprovalPeriod"/>
+                <lookupField id="approverLookup" width="100%" optionsContainer="usersDc" caption="msg://approver" required="true"/>
+            </column>
+        </form>
         <hbox id="formActions" spacing="true">
-            <button id="commit" caption="mainMsg://actions.Ok"/>
-            <button id="cancel" caption="mainMsg://actions.Cancel"/>
+            <button id="commit" caption="mainMsg://actions.Ok" icon="CHECK"/>
+            <button id="cancel" caption="mainMsg://actions.Cancel" icon="BAN"/>
         </hbox>
     </layout>
 </window>

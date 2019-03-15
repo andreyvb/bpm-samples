@@ -1,8 +1,8 @@
 package com.company.bpmsamples.web.contract;
 
+import com.company.bpmsamples.entity.Contract;
 import com.haulmont.bpm.gui.procactionsfragment.ProcActionsFragment;
 import com.haulmont.cuba.gui.screen.*;
-import com.company.bpmsamples.entity.Contract;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -21,9 +21,9 @@ public class ContractEdit extends StandardEditor<Contract> {
 
     @Subscribe
     private void onBeforeShow(BeforeShowEvent event) {
-
         procActionsFragment.initializer()
                 .standard()
+                //screen parameters supplier returns a map of window parameters that may be used in the process form
                 .setStartProcessActionScreenParametersSupplier(() -> {
                     Map<String, Object> screenParams = new HashMap<>();
                     screenParams.put("contract", getEditedEntity());
