@@ -4,7 +4,7 @@
 
 This project contains few samples that demonstrate how to use different components of the BPM addon. The samples are described in the [BPM addon documentation](https://doc.cuba-platform.com/bpm-6.9/examples.html)
 
-The project is based on CUBA Platform 6.9.0.  
+The project is based on CUBA Platform 7.1.0.  
 
 ## How To Get Started With This Project
 
